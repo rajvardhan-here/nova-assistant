@@ -1,4 +1,8 @@
+import { useAuth } from "../context/AuthContext.jsx";
+
 function Sidebar({ chats, activeChatId, onSelectChat, onNewChat }) {
+  const { user, logout } = useAuth();
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -27,8 +31,15 @@ function Sidebar({ chats, activeChatId, onSelectChat, onNewChat }) {
       </div>
 
       <div className="sidebar-footer">
-        <div className="user-avatar">RS</div>
-        <span>Rajvardhan Singh</span>
+        {user?.photoURL ? (
+          <img src={user.photoURL} alt="profile" className="user-avatar-img" />
+        ) : (
+          <div className="user-avatar">{user?.displayName?.[0] || "U"}</div>
+        )}
+        <span className="user-name">{user?.displayName || user?.email}</span>
+        <button className="logout-btn" onClick={logout} title="Logout">
+          ⎋
+        </button>
       </div>
     </div>
   );
