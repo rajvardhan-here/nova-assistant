@@ -76,6 +76,7 @@ function ChatPage() {
         onNewChat={handleNewChat}
         view={view}
         onChangeView={setView}
+        onChatsUpdated={loadChats}
       />
       <div className="main-panel">
         {view === "chat" ? (
@@ -88,12 +89,7 @@ function ChatPage() {
         )}
       </div>
 
-      {voiceMode && (
-        <VoiceOverlay
-          onSendMessage={handleSend}
-          onClose={() => setVoiceMode(false)}
-        />
-      )}
+      {voiceMode && <VoiceOverlay onSendMessage={handleSend} onClose={() => setVoiceMode(false)} />}
     </div>
   );
 }

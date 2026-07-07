@@ -50,3 +50,15 @@ export const deleteTask = async (id) => {
   const res = await axios.delete(`${API_BASE}/tasks/${id}`, { headers });
   return res.data;
 };
+
+export const togglePinChat = async (chatId) => {
+  const headers = await getAuthHeader();
+  const res = await axios.patch(`${API_BASE}/chats/${chatId}/pin`, {}, { headers });
+  return res.data;
+};
+
+export const deleteChat = async (chatId) => {
+  const headers = await getAuthHeader();
+  const res = await axios.delete(`${API_BASE}/chats/${chatId}`, { headers });
+  return res.data;
+};

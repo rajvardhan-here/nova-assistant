@@ -1,6 +1,13 @@
+import { useEffect, useRef } from "react";
 import MessageBubble from "./MessageBubble.jsx";
 
 function ChatWindow({ messages, loading }) {
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
   return (
     <div className="chat-window">
       {messages.length === 0 && !loading && (
@@ -14,9 +21,9 @@ function ChatWindow({ messages, loading }) {
         <MessageBubble key={msg._id} role={msg.role} content={msg.content} />
       ))}
 
-      {loading && (
-        <MessageBubble role="assistant" content="Typing..." isTyping />
-      )}
+      {loading && <MessageBubble role="assistant" content="Typing..." isTyping />}
+
+      <div ref={bottomRef} />
     </div>
   );
 }

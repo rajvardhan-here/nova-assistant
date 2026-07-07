@@ -567,3 +567,65 @@ body {
   pointer-events: none;
   user-select: none;
 }
+
+.chat-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-item-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #999;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.chat-item:hover .chat-menu-btn {
+  opacity: 1;
+}
+
+.chat-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.chat-menu-dropdown {
+  position: absolute;
+  right: 8px;
+  top: 32px;
+  background: white;
+  border: 1px solid #f0e0dd;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  min-width: 130px;
+  overflow: hidden;
+}
+
+.chat-menu-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #333;
+}
+
+.chat-menu-item:hover {
+  background: #fdeceb;
+}
+
+.chat-menu-item.delete {
+  color: #d94540;
+}
