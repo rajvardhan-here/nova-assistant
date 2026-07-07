@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuthContext.jsx";
 
 function SettingsModal({ onClose }) {
-  const { user, logout } = useAuth();
+  const { user, logout, calendarConnected } = useAuth();
 
   return (
     <div className="settings-overlay" onClick={onClose}>
@@ -12,11 +12,14 @@ function SettingsModal({ onClose }) {
         </div>
 
         <div className="settings-section">
-          <div className="settings-row">
-            <div>
-              <div className="settings-label">Account</div>
-              <div className="settings-sub">{user?.email}</div>
-            </div>
+          <div className="settings-label">Account</div>
+          <div className="settings-sub">{user?.email}</div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-label">Google Calendar</div>
+          <div className="settings-sub">
+            {calendarConnected ? "🟢 Connected — events sync automatically" : "🔴 Not connected — log out and log in again to connect"}
           </div>
         </div>
 
