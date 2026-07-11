@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
+import memoryRoutes from "./routes/memoryRoutes.js";
 import { startReminderCron } from "./jobs/reminderCron.js";
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/api", chatRoutes);
 app.use("/api", taskRoutes);
+app.use("/api", memoryRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "SAKHA backend is alive 🚀" });

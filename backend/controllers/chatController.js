@@ -1,6 +1,7 @@
 import Chat from "../models/Chat.js";
 import Message from "../models/Message.js";
 import Task from "../models/Task.js";
+import Memory from "../models/Memory.js";
 import Groq from "groq-sdk";
 import dotenv from "dotenv";
 import { getGroqResponse } from "../services/groqService.js";
@@ -95,12 +96,9 @@ const answerFromSearch = async (query, searchData) => {
       {
         role: "system",
         content:
-          "You are SAKHA, a friendly AI. Use the search results below to answer the user's question naturally and conversationally, like a friend giving them a quick update. At the end, on a new line, include the single most relevant source URL from the results in this exact format: SOURCE: <url>. Keep the spoken answer concise. No markdown formatting in the main answer.",
+          "You are SAKHA, a friendly AI. Use the search results below to answer the user's question naturally and conversationally. At the end, on a new line, include the single most relevant source URL in this exact format: SOURCE: <url>. Keep the spoken answer concise. No markdown formatting in the main answer.",
       },
-      {
-        role: "user",
-        content: `Question: ${query}\n\nInformation found:\n${context}`,
-      },
+      { role: "user", content: `Question: ${query}\n\nInformation found:\n${context}` },
     ],
     model: "llama-3.1-8b-instant",
     temperature: 0.5,
@@ -120,9 +118,7 @@ export const sendMessage = async (req, res) => {
     }
 
     const chat = await Chat.findOne({ _id: chatId, userId: req.userId });
-    if (!chat) {
-      return res.status(404).json({ error: "Chat not found" });
-    }
+    if (!chat) return res.status(404).json({ error: "Chat not found" });
 
     const userMessage = await Message.create({ chatId, role: "user", content });
 
@@ -132,12 +128,15 @@ export const sendMessage = async (req, res) => {
     if (intent.type === "chat") {
       const pastMessages = await Message.find({ chatId }).sort({ createdAt: 1 });
       const history = pastMessages.map((m) => ({ role: m.role, content: m.content }));
-      aiReply = await getGroqResponse(history);
+      const memories = await Memory.find({ userId: req.userId }).sort({ createdAt: -1 }).limit(30);
+      aiReply = await getGroqResponse(history, memories);
+    } else if (intent.type === "memory") {
+      const memory = await Memory.create({ userId: req.userId, content: intent.content || content });
+      aiReply = `🧠 Got it, I'll remember: "${memory.content}"`;
     } else if (intent.type === "search") {
       try {
         const searchData = await webSearch(intent.content || content);
         const rawReply = await answerFromSearch(intent.content || content, searchData);
-        // Extract SOURCE: url and format nicely
         const sourceMatch = rawReply.match(/SOURCE:\s*(\S+)/i);
         const cleanReply = rawReply.replace(/SOURCE:\s*\S+/i, "").trim();
         aiReply = sourceMatch ? `${cleanReply}\n\n🔗 ${sourceMatch[1]}` : cleanReply;
@@ -165,7 +164,6 @@ export const sendMessage = async (req, res) => {
         aiReply = `📅 Event saved in SAKHA: "${task.content}" for ${formatDueDate(task.dueDate)} (couldn't sync to Google Calendar) ✅`;
       }
     } else {
-      // note, reminder, alarm, or event without calendar access
       const task = await Task.create({
         userId: req.userId,
         type: intent.type,
